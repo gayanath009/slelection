@@ -1,4 +1,3 @@
 flask
 gunicorn
-urllib.request
 sqlite3
