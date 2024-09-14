@@ -1,5 +1,6 @@
 import pickle
 import urllib.request
+import socket
 import sqlite3
 from datetime import datetime
 from flask import Flask,render_template, jsonify, request
@@ -23,8 +24,16 @@ def results():
             return public_ip
         except Exception as e:
             return f"Error: {e}" 
+   
+    def get_local_ip():
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+        return local_ip
+
     
     pub_ip = get_public_ip()
+    lcl_ip = get_local_ip()
+    cmpst_ip = pub_ip + '_' + lcl_ip
     today = datetime.today().strftime('%Y-%m-%d')   
     cndidt = request.form.get('radioVote')
     
@@ -45,7 +54,7 @@ def results():
     
 
     # Check if the IP has already voted
-    cur.execute('SELECT * FROM vote WHERE ip = ?', (pub_ip,))
+    cur.execute('SELECT * FROM vote WHERE ip = ?', (cmpst_ip,))
     existing_vote = cur.fetchone()
 
     if existing_vote:
@@ -53,7 +62,7 @@ def results():
     else:    
         cur.execute('''INSERT INTO vote (ip, vote_date, rw, nr, sp, akd, sf, dj) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (pub_ip, today, rw, nr, sp, akd, sf, dj))
+                    (cmpst_ip, today, rw, nr, sp, akd, sf, dj))
         con.commit()
     
 
