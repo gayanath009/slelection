@@ -16,22 +16,12 @@ def index():
 
 @app.route('/results', methods = ["POST"])
 def results():   
-    aldyVoted = 0    
-    # def get_public_ip():
-    #     try:            
-    #         with urllib.request.urlopen('https://api.ipify.org') as response:
-    #             public_ip = response.read().decode('utf8')
-    #         return public_ip
-    #     except Exception as e:
-    #         return f"Error: {e}" 
-   
-    def get_mac_address():
-        mac = hex(uuid.getnode()).replace('0x', '').upper()
-        mac = ':'.join(mac[i:i+2] for i in range(0, len(mac), 2))
-        return mac
+    aldyVoted = 0       
 
-    
-    mac_id = get_mac_address()
+    public_ip = request.remote_addr
+    user_agent = request.headers.get('User-Agent')
+    unique_id = f"{public_ip}_{user_agent}"
+
     today = datetime.today().strftime('%Y-%m-%d')   
     cndidt = request.form.get('radioVote')
     
@@ -52,7 +42,7 @@ def results():
     
 
     # Check if the IP has already voted
-    cur.execute('SELECT * FROM vote WHERE ip = ?', (mac_id,))
+    cur.execute('SELECT * FROM vote WHERE ip = ?', (unique_id,))
     existing_vote = cur.fetchone()
 
     if existing_vote:
@@ -60,7 +50,7 @@ def results():
     else:    
         cur.execute('''INSERT INTO vote (ip, vote_date, rw, nr, sp, akd, sf, dj) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (mac_id, today, rw, nr, sp, akd, sf, dj))
+                    (unique_id, today, rw, nr, sp, akd, sf, dj))
         con.commit()
     
 
@@ -97,24 +87,24 @@ def results():
 
 
 
-    # return render_template('results.html', 
-    #                        sum_rw = sum_rw,
-    #                        sum_nr = sum_nr,
-    #                        sum_sp = sum_sp,
-    #                        sum_akd = sum_akd,
-    #                        sum_sf = sum_sf,
-    #                        sum_dj = sum_dj,
-    #                        totol_votes = round(totol_votes,0),
-    #                        pct_rw = round(pct_rw,1),
-    #                        pct_nr = round(pct_nr,1),
-    #                        pct_sp = round(pct_sp,1),
-    #                        pct_akd = round(pct_akd,1),
-    #                        pct_sf = round(pct_sf,1),
-    #                        pct_dj = round(pct_dj,1),
-    #                        aldyVoted = aldyVoted,
-    #                        slctd_cndidt = cndidt)
+    return render_template('results.html', 
+                           sum_rw = sum_rw,
+                           sum_nr = sum_nr,
+                           sum_sp = sum_sp,
+                           sum_akd = sum_akd,
+                           sum_sf = sum_sf,
+                           sum_dj = sum_dj,
+                           totol_votes = round(totol_votes,0),
+                           pct_rw = round(pct_rw,1),
+                           pct_nr = round(pct_nr,1),
+                           pct_sp = round(pct_sp,1),
+                           pct_akd = round(pct_akd,1),
+                           pct_sf = round(pct_sf,1),
+                           pct_dj = round(pct_dj,1),
+                           aldyVoted = aldyVoted,
+                           slctd_cndidt = cndidt)
 
-    return jsonify({"message": f"Your Mac ID : {mac_id, aldyVoted }"})
+    #return jsonify({"message": f"Your Mac ID : {mac_id, aldyVoted }"})
 
 if __name__ == '__main__':
     app.run( debug=True)
