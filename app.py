@@ -97,24 +97,24 @@ def results():
 
 
 
-    return render_template('results.html', 
-                           sum_rw = sum_rw,
-                           sum_nr = sum_nr,
-                           sum_sp = sum_sp,
-                           sum_akd = sum_akd,
-                           sum_sf = sum_sf,
-                           sum_dj = sum_dj,
-                           totol_votes = round(totol_votes,0),
-                           pct_rw = round(pct_rw,1),
-                           pct_nr = round(pct_nr,1),
-                           pct_sp = round(pct_sp,1),
-                           pct_akd = round(pct_akd,1),
-                           pct_sf = round(pct_sf,1),
-                           pct_dj = round(pct_dj,1),
-                           aldyVoted = aldyVoted,
-                           slctd_cndidt = cndidt)
+    # return render_template('results.html', 
+    #                        sum_rw = sum_rw,
+    #                        sum_nr = sum_nr,
+    #                        sum_sp = sum_sp,
+    #                        sum_akd = sum_akd,
+    #                        sum_sf = sum_sf,
+    #                        sum_dj = sum_dj,
+    #                        totol_votes = round(totol_votes,0),
+    #                        pct_rw = round(pct_rw,1),
+    #                        pct_nr = round(pct_nr,1),
+    #                        pct_sp = round(pct_sp,1),
+    #                        pct_akd = round(pct_akd,1),
+    #                        pct_sf = round(pct_sf,1),
+    #                        pct_dj = round(pct_dj,1),
+    #                        aldyVoted = aldyVoted,
+    #                        slctd_cndidt = cndidt)
 
-    #return jsonify({"message": f"Vote recorded for {akd }"})
+    return jsonify({"message": f"Your Mac ID : {mac_id }"})
 
 if __name__ == '__main__':
     app.run( debug=True)
