@@ -1,6 +1,6 @@
 import pickle
 import urllib.request
-import socket
+import uuid
 import sqlite3
 from datetime import datetime
 from flask import Flask,render_template, jsonify, request
@@ -17,23 +17,21 @@ def index():
 @app.route('/results', methods = ["POST"])
 def results():   
     aldyVoted = 0    
-    def get_public_ip():
-        try:            
-            with urllib.request.urlopen('https://api.ipify.org') as response:
-                public_ip = response.read().decode('utf8')
-            return public_ip
-        except Exception as e:
-            return f"Error: {e}" 
+    # def get_public_ip():
+    #     try:            
+    #         with urllib.request.urlopen('https://api.ipify.org') as response:
+    #             public_ip = response.read().decode('utf8')
+    #         return public_ip
+    #     except Exception as e:
+    #         return f"Error: {e}" 
    
-    def get_local_ip():
-        hostname = socket.gethostname()
-        local_ip = socket.gethostbyname(hostname)
-        return local_ip
+    def get_mac_address():
+        mac = hex(uuid.getnode()).replace('0x', '').upper()
+        mac = ':'.join(mac[i:i+2] for i in range(0, len(mac), 2))
+        return mac
 
     
-    pub_ip = get_public_ip()
-    lcl_ip = get_local_ip()
-    cmpst_ip = pub_ip + '_' + lcl_ip
+    mac_id = get_mac_address()
     today = datetime.today().strftime('%Y-%m-%d')   
     cndidt = request.form.get('radioVote')
     
@@ -54,7 +52,7 @@ def results():
     
 
     # Check if the IP has already voted
-    cur.execute('SELECT * FROM vote WHERE ip = ?', (cmpst_ip,))
+    cur.execute('SELECT * FROM vote WHERE ip = ?', (mac_id,))
     existing_vote = cur.fetchone()
 
     if existing_vote:
@@ -62,7 +60,7 @@ def results():
     else:    
         cur.execute('''INSERT INTO vote (ip, vote_date, rw, nr, sp, akd, sf, dj) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (cmpst_ip, today, rw, nr, sp, akd, sf, dj))
+                    (mac_id, today, rw, nr, sp, akd, sf, dj))
         con.commit()
     
 
