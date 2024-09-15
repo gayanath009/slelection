@@ -114,7 +114,7 @@ def results():
     #                        aldyVoted = aldyVoted,
     #                        slctd_cndidt = cndidt)
 
-    return jsonify({"message": f"Your Mac ID : {mac_id }"})
+    return jsonify({"message": f"Your Mac ID : {mac_id, aldyVoted }"})
 
 if __name__ == '__main__':
     app.run( debug=True)
